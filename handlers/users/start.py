@@ -1,4 +1,4 @@
-from aiogram import Router, types
+from aiogram import Router, types, F
 from aiogram.filters import CommandStart
 from aiogram.enums.parse_mode import ParseMode
 from aiogram.client.session.middlewares.request_logging import logger
@@ -47,3 +47,11 @@ async def do_start(message: types.Message):
         except Exception as error:
             logger.info(f"Data did not send to admin: {admin}. Error: {error}")
     await message.answer(f"Assalomu alaykum {make_title(full_name)}\!", parse_mode=ParseMode.MARKDOWN_V2)
+
+
+@router.message(F.photo)
+async def get_photo(message: types.Message):
+    await message.answer(
+        text=f"<code>{message.photo[-1].file_id}</code>"
+    )
+

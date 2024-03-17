@@ -37,11 +37,14 @@ async def setup_aiogram(dispatcher: Dispatcher, bot: Bot) -> None:
     logger.info("Configured aiogram")
 
 
-# async def database_connected():
-#     # Ma'lumotlar bazasini yaratamiz:
-#     await db.create()
-#     # await db.drop_users()
-#     await db.create_table_users()
+async def database_connected():
+    # Ma'lumotlar bazasini yaratamiz:
+    await db.create()
+    # await db.drop_users()
+    # await db.drop_books()
+    await db.create_table_users()
+    await db.create_table_shops()
+    await db.create_table_books()
 
 
 async def aiogram_on_startup_polling(dispatcher: Dispatcher, bot: Bot) -> None:
@@ -49,7 +52,7 @@ async def aiogram_on_startup_polling(dispatcher: Dispatcher, bot: Bot) -> None:
     from utils.notify_admins import on_startup_notify
 
     logger.info("Database connected")
-    # await database_connected()
+    await database_connected()
 
     logger.info("Starting polling")
     await bot.delete_webhook(drop_pending_updates=True)
