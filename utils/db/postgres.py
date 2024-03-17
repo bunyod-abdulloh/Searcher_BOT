@@ -116,6 +116,10 @@ class Database:
         sql = "SELECT id, name FROM Shops"
         return await self.execute(sql, fetch=True)
 
+    async def select_shop_by_id(self, id_):
+        sql = f"SELECT * FROM Shops WHERE id='{id_}'"
+        return await self.execute(sql, fetchrow=True)
+
     async def drop_shops(self):
         await self.execute("DROP TABLE Shops", execute=True)
 
@@ -127,7 +131,6 @@ class Database:
         shop_id INT NULL,
         book TEXT NULL,        
         price FLOAT NULL,        
-        image TEXT DEFAULT (SELECT image FROM Shops WHERE Shops.id = Books.shop_id),
         FOREIGN KEY (shop_id) REFERENCES Shops(id)        
         );
         """
@@ -142,7 +145,7 @@ class Database:
         return await self.execute(sql, book, fetch=True)
 
     async def select_books(self):
-        sql = "SELECT * FROM Books"
+        sql = "SELECT * FROM Books ORDER BY book"
         return await self.execute(sql, fetch=True)
 
     async def drop_books(self):
