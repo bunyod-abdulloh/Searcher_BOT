@@ -25,17 +25,16 @@ async def do_start(message: types.Message):
         await db.add_user(telegram_id=telegram_id, full_name=full_name, username=username)
     except Exception as error:
         logger.info(error)
-    for admin in ADMINS:
-        try:
-            await bot.send_message(
-                chat_id=admin,
-                text=msg,
-                parse_mode=ParseMode.MARKDOWN_V2
-            )
-        except Exception as error:
-            logger.info(f"Data did not send to admin: {admin}. Error: {error}")
-    await message.answer(f"Assalomu alaykum {full_name}!", parse_mode=ParseMode.HTML,
-                         reply_markup=main_buttons_uz)
+    # for admin in ADMINS:
+    #     try:
+    #         await bot.send_message(
+    #             chat_id=admin,
+    #             text=msg,
+    #             parse_mode=ParseMode.MARKDOWN_V2
+    #         )
+    #     except Exception as error:
+    #         logger.info(f"Data did not send to admin: {admin}. Error: {error}")
+    await message.answer(text="Assalomu alaykum {full_name}!", parse_mode=ParseMode.HTML, reply_markup=main_buttons_uz)
 
 
 @router.message(F.photo)

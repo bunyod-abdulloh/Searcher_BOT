@@ -32,17 +32,17 @@ async def region_uz_two(inline_query: types.InlineQuery, state: FSMContext):
         for book in all_books:
             shop = await db.select_shop_by_id(id_=book['shop_id'])
             all_results.append(
-                types.InlineQueryResultCachedPhoto(
+                types.InlineQueryResultArticle(
                     id=str(book['id']),
-                    photo_file_id=shop['image'],
                     title=book['book'],
-                    description=f"Narxi: {book['price']}00 so'm\nDo'kon: {shop['name']} | Manzil: {shop['address']}",
-                    caption="Bu caption",
+                    description=f"Narxi: {book['price']}00 so'm\nDo'kon: {shop['name']} | "
+                                f"Manzil: {shop['address']}",
                     input_message_content=types.InputTextMessageContent(
                         message_text='book[1]'
                     ),
                 )
             )
         await inline_query.answer(
-            results=all_results, cache_time=0, switch_pm_parameter="button", switch_pm_text="Pastdan tepaga suring"
+            results=all_results, cache_time=0, switch_pm_parameter="button", switch_pm_text="Pastdan tepaga suring",
+            is_personal=True
         )
