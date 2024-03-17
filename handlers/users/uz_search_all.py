@@ -26,7 +26,6 @@ async def region_uz_two(inline_query: types.InlineQuery, state: FSMContext):
     # book = await db.select_book(book=inline_query.query)
     all_results = []
     search_result = []
-    print(all_books)
     if len(query_) > 0:
         pass
     else:
@@ -37,15 +36,15 @@ async def region_uz_two(inline_query: types.InlineQuery, state: FSMContext):
                     id=str(book['id']),
                     photo_file_id=shop['image'],
                     title=book['book'],
-                    caption=f"Do'kon nomi: {shop['name']} | Manzil: {shop['address']}\nNarxi: {book['price']}",
-                    description="Bu description",
+                    description=f"Narxi: {book['price']}00 so'm\nDo'kon: {shop['name']} | Manzil: {shop['address']}",
+                    caption="Bu caption",
                     input_message_content=types.InputTextMessageContent(
                         message_text='book[1]'
                     ),
                 )
             )
-            pass
+        print(all_results)
         await inline_query.answer(
-            results=all_results, cache_time=0, is_personal=True
+            results=all_results, cache_time=0, switch_pm_parameter="button", switch_pm_text="Pastdan tepaga suring"
         )
 
