@@ -42,8 +42,8 @@ async def region_uz_two(inline_query: types.InlineQuery, state: FSMContext):
                         description="decription",
                         caption="caption",
                         parse_mode=ParseMode.HTML,
-                        photo_url="https://i.postimg.cc/wMHK6zMv/BOOKUz.jpg",
-                        thumbnail_url="https://i.postimg.cc/wMHK6zMv/BOOKUz.jpg",
+                        photo_url="https://i1.wp.com/mohirdev.uz/wp-content/uploads/Telegram-bot.png",
+                        thumbnail_url="https://i1.wp.com/mohirdev.uz/wp-content/uploads/Telegram-bot.png",
                         input_message_content=types.InputTextMessageContent(
                             message_text='booklar', parse_mode=ParseMode.HTML
                         ),
