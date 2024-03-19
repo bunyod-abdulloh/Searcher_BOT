@@ -35,16 +35,17 @@ async def region_uz_two(inline_query: types.InlineQuery, state: FSMContext):
             for book in all_books:
                 shop = await db.select_shop_by_id(id_=book['shop_id'])
                 all_results.append(
-                    types.InlineQueryResultCachedPhoto(
+                    types.InlineQueryResultPhoto(
                         id=str(book['id']),
                         type=InlineQueryResultType.PHOTO,
                         title=book['book'],
                         description="decription",
                         caption="caption",
                         parse_mode=ParseMode.HTML,
-                        photo_file_id=shop['image'],
+                        photo_url="https://i.postimg.cc/wMHK6zMv/BOOKUz.jpg",
+                        thumbnail_url="https://i.postimg.cc/wMHK6zMv/BOOKUz.jpg",
                         input_message_content=types.InputTextMessageContent(
-                            message_text='booklar', parse_mode=ParseMode.HTML, disable_web_page_preview=True
+                            message_text='booklar', parse_mode=ParseMode.HTML
                         ),
                     )
                 )
@@ -57,3 +58,11 @@ async def region_uz_two(inline_query: types.InlineQuery, state: FSMContext):
         print(all_results)
 # f"Narxi: {book['price']}00 so'm\nDo'kon: {shop['name']} | "
 #                                 f"Manzil: {shop['address']}"
+
+
+@router.message(F.text == "rasm")
+async def send_rasm(message: types.Message):
+    await message.answer_photo(
+        photo="https://i.postimg.cc/wMHK6zMv/BOOKUz.jpg",
+        caption="caption"
+    )
