@@ -73,14 +73,15 @@ def main():
     from aiogram.enums import ParseMode
     from aiogram.fsm.storage.memory import MemoryStorage
 
+    allowed_updates = ['message', 'callback_query', 'inline_query']
+
     bot = Bot(token=BOT_TOKEN, parse_mode=ParseMode.HTML)
     storage = MemoryStorage()
     dispatcher = Dispatcher(storage=storage)
 
     dispatcher.startup.register(aiogram_on_startup_polling)
     dispatcher.shutdown.register(aiogram_on_shutdown_polling)
-    asyncio.run(dispatcher.start_polling(bot, close_bot_session=True))
-    # allowed_updates=['message', 'chat_member']
+    asyncio.run(dispatcher.start_polling(bot, close_bot_session=True, allowed_updates=allowed_updates))
 
 
 if __name__ == "__main__":
