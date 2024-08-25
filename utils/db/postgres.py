@@ -88,7 +88,7 @@ class Database:
     async def drop_users(self):
         await self.execute("DROP TABLE Users", execute=True)
 
-# ==================== DO'KONLAR JADVALI ====================
+    # ==================== DO'KONLAR JADVALI ====================
     async def create_table_shops(self):
         sql = """
         CREATE TABLE IF NOT EXISTS Shops (
@@ -123,7 +123,7 @@ class Database:
     async def drop_shops(self):
         await self.execute("DROP TABLE Shops", execute=True)
 
-# ==================== KITOBLAR JADVALI ====================
+    # ==================== KITOBLAR JADVALI ====================
     async def create_table_books(self):
         sql = """
         CREATE TABLE IF NOT EXISTS Books (
@@ -146,6 +146,10 @@ class Database:
 
     async def select_books(self):
         sql = "SELECT * FROM Books ORDER BY book"
+        return await self.execute(sql, fetch=True)
+
+    async def select_book_like(self, text):
+        sql = f"SELECT *, LOWER(book) FROM Books WHERE LOWER(book) LIKE '%{text}%'"
         return await self.execute(sql, fetch=True)
 
     async def drop_books(self):
