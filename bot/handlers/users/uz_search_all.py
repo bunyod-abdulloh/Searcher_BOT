@@ -49,7 +49,9 @@ async def inline_query_handler(inline_query: types.InlineQuery):
                 )
             )
         await inline_query.answer(
-            results=result, is_personal=True, cache_time=1
+            results=result, is_personal=True, cache_time=1, button=types.InlineQueryResultsButton(
+                text="salom", start_parameter="startst"
+            ), switch_pm_text="switch text", switch_pm_parameter="switch parameter"
         )
         # photo_url = "https://i1.wp.com/mohirdev.uz/wp-content/uploads/Telegram-bot.png",
         # thumbnail_url = "https://i1.wp.com/mohirdev.uz/wp-content/uploads/Telegram-bot.png",
