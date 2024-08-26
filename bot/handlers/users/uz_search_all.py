@@ -21,12 +21,11 @@ async def region_uz_one(call: types.CallbackQuery, state: FSMContext):
 
 
 @router.inline_query()
-async def region_uz_two(inline_query: types.InlineQuery, state: FSMContext):
-    # all_books = await db.select_books()
+async def inline_query_handler(inline_query: types.InlineQuery):
+    print(inline_query)
     query_ = inline_query.query
-    # book = await db.select_book(book=inline_query.query)
 
-    result_search = []
+    result = []
 
     if len(query_) > 0:
         book_like = await db.select_book_like(
@@ -36,21 +35,24 @@ async def region_uz_two(inline_query: types.InlineQuery, state: FSMContext):
             shop = await db.select_shop_by_id(
                 id_=book['shop_id']
             )
-            result_search.append(
-                types.InlineQueryResultCachedPhoto(
-                    type=InlineQueryResultType.PHOTO,
+            result.append(
+                types.InlineQueryResultArticle(
+                    type=InlineQueryResultType.ARTICLE,
                     id=str(book['id']),
-                    photo_file_id=shop['image'],
-                    title="TITLE",
-                    caption="DESCRIPTION",
+                    title=book['book'],
+                    description=f"Do'kon: {shop['name']}\nNarx: {book['price']} so'm",
+                    thumbnail_url=shop['image'],
+                    parse_mode="HTML",
                     input_message_content=types.InputTextMessageContent(
                         message_text=f"Hello, this is result {book['book']}", parse_mode="HTML"
                     )
                 )
             )
         await inline_query.answer(
-            results=result_search, is_personal=True
+            results=result, is_personal=True, cache_time=1
         )
+        # photo_url = "https://i1.wp.com/mohirdev.uz/wp-content/uploads/Telegram-bot.png",
+        # thumbnail_url = "https://i1.wp.com/mohirdev.uz/wp-content/uploads/Telegram-bot.png",
     # else:
     #     try:
     #         for book in all_books:
@@ -77,6 +79,8 @@ async def region_uz_two(inline_query: types.InlineQuery, state: FSMContext):
     #         is_personal=True
     #     )
     #     print(all_results)
+
+
 # f"Narxi: {book['price']}00 so'm\nDo'kon: {shop['name']} | "
 #                                 f"Manzil: {shop['address']}"
 
