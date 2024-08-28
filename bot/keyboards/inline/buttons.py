@@ -64,3 +64,22 @@ def search_all_buttons(search_text: str, back_text: str, back_callback: str):
         ]
     )
     return keyboard
+
+
+def check_inline_query():
+    keyboard = InlineKeyboardMarkup(
+        inline_keyboard=
+        [
+            [
+                InlineKeyboardButton(
+                    text="🔍 Qidirish", switch_inline_query_current_chat=""
+                )
+            ],
+            [
+                InlineKeyboardButton(
+                    text="✅ Buyurtma qilish", url="https://t.me/muhib_dev"
+                )
+            ]
+        ]
+    )
+    return keyboard

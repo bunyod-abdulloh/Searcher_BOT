@@ -2,7 +2,7 @@ from aiogram import Router, F, types
 from aiogram.enums import InlineQueryResultType
 from aiogram.fsm.context import FSMContext
 
-from bot.keyboards.inline.buttons import search_all_buttons
+from bot.keyboards.inline.buttons import search_all_buttons, check_inline_query
 from loader import db
 from bot.states.user_states import SearchAllUz
 
@@ -10,6 +10,38 @@ router = Router()
 all_buttons_uz = search_all_buttons(
     search_text="Qidirish", back_text="Ortga", back_callback="back_main_uz"
 )
+
+
+async def inline_searcher(books, i_query: types.InlineQuery):
+    result = []
+    for book in books:
+        shop = await db.select_shop_by_id(
+            id_=book['shop_id']
+        )
+        if book['amount'] == 0:
+            pass
+        else:
+            result.append(
+                types.InlineQueryResultArticle(
+                    type=InlineQueryResultType.ARTICLE,
+                    id=str(book['id']),
+                    title=book['book'],
+                    description=f"Do'kon: {shop['name']}\nNarx: {book['price']} so`m",
+                    thumbnail_url=shop['image'],
+                    parse_mode="HTML",
+                    input_message_content=types.InputTextMessageContent(
+                        message_text=f"<b>Kitob nomi:</b> {book['book']}\n<b>Narxi:</b> {book['price']} so`m\n\n"
+                                     f"<b>Manzil:</b> {shop['region']}, {shop['city']}, {shop['address']}\n\n"
+                                     f"<b>Telefon raqam:</b> {shop['phone']}\n\n"
+                                     f"<a href='{shop['map']}'>Manzilni xaritada ko`rish</a>",
+                        link_preview_options=types.LinkPreviewOptions(url=f"{shop['image']}")
+                    ), reply_markup=check_inline_query()
+                ))
+    await i_query.answer(
+        results=result, is_personal=True, cache_time=1, button=types.InlineQueryResultsButton(
+            text="Pastdan tepaga suring", start_parameter="startst"
+        ),
+    )
 
 
 @router.callback_query(F.data == "all_uz")
@@ -22,77 +54,21 @@ async def region_uz_one(call: types.CallbackQuery, state: FSMContext):
 
 @router.callback_query()
 @router.inline_query()
-async def inline_query_handler(inline_query: types.InlineQuery):
-    query_ = inline_query.query
-
-    result = []
+async def inline_query_handler(i_query: types.InlineQuery):
+    query_ = i_query.query
 
     if len(query_) > 0:
         book_like = await db.select_book_like(
             text=query_
         )
-        for book in book_like:
-            shop = await db.select_shop_by_id(
-                id_=book['shop_id']
-            )
-            if book['amount'] == 0:
-                pass
-            else:
-                result.append(
-                    types.InlineQueryResultArticle(
-                        type=InlineQueryResultType.ARTICLE,
-                        id=str(book['id']),
-                        title=book['book'],
-                        description=f"Do'kon: {shop['name']}\nNarx: {book['price']} so'm",
-                        thumbnail_url=shop['image'],
-                        parse_mode="HTML",
-                        input_message_content=types.InputTextMessageContent(
-                            message_text=f"<b>Kitob nomi:</b> {book['book']}\n<b>Narxi:</b> {book['price']} so`m\n\n"
-                                         f"<b>Manzil:</b> {shop['region']}, {shop['city']}, {shop['address']}\n\n"
-                                         f"<b>Telefon raqam:</b> {shop['phone']}\n\n"
-                                         f"<a href='{shop['map']}'>Xaritada ko`rish</a>",
-                            link_preview_options=types.LinkPreviewOptions(url=f"{shop['image']}")
-                        ), reply_markup=search_all_buttons(
-                            search_text="Qidirish", back_text="Ortga", back_callback="back_main_uz"
-                        )
-                    ))
-        await inline_query.answer(
-            results=result, is_personal=True, cache_time=1, button=types.InlineQueryResultsButton(
-                text="Pastdan tepaga suring", start_parameter="startst"
-            ),
+        await inline_searcher(
+            books=book_like, i_query=i_query
         )
-        # photo_url = "https://i1.wp.com/mohirdev.uz/wp-content/uploads/Telegram-bot.png",
-        # thumbnail_url = "https://i1.wp.com/mohirdev.uz/wp-content/uploads/Telegram-bot.png",
-    # else:
-    #     try:
-    #         for book in all_books:
-    #             shop = await db.select_shop_by_id(id_=book['shop_id'])
-    #             all_results.append(
-    #                 types.InlineQueryResultPhoto(
-    #                     id=str(book['id']),
-    #                     type=InlineQueryResultType.PHOTO,
-    #                     title=book['book'],
-    #                     description="decription",
-    #                     caption="caption",
-    #                     parse_mode=ParseMode.HTML,
-    #                     photo_url="https://i1.wp.com/mohirdev.uz/wp-content/uploads/Telegram-bot.png",
-    #                     thumbnail_url="https://i1.wp.com/mohirdev.uz/wp-content/uploads/Telegram-bot.png",
-    #                     input_message_content=types.InputTextMessageContent(
-    #                         message_text='booklar', parse_mode=ParseMode.HTML
-    #                     ),
-    #                 )
-    #             )
-    #     except Exception as e:
-    #         print(e)
-    #     await inline_query.answer(
-    #         results=all_results, switch_pm_parameter="button", switch_pm_text="Pastdan tepaga suring",
-    #         is_personal=True
-    #     )
-    #     print(all_results)
-
-
-# f"Narxi: {book['price']}00 so'm\nDo'kon: {shop['name']} | "
-#                                 f"Manzil: {shop['address']}"
+    else:
+        all_books = await db.select_books()
+        await inline_searcher(
+            books=all_books, i_query=i_query
+        )
 
 
 @router.message(F.text == "rasm")
