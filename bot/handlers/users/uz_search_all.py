@@ -1,5 +1,5 @@
 from aiogram import Router, F, types
-from aiogram.enums import InlineQueryResultType, ParseMode, InputMediaType
+from aiogram.enums import InlineQueryResultType
 from aiogram.fsm.context import FSMContext
 
 from bot.keyboards.inline.buttons import search_all_buttons
@@ -20,9 +20,9 @@ async def region_uz_one(call: types.CallbackQuery, state: FSMContext):
     await state.set_state(SearchAllUz.Q1)
 
 
+@router.callback_query()
 @router.inline_query()
 async def inline_query_handler(inline_query: types.InlineQuery):
-    print(inline_query)
     query_ = inline_query.query
 
     result = []
@@ -35,23 +35,31 @@ async def inline_query_handler(inline_query: types.InlineQuery):
             shop = await db.select_shop_by_id(
                 id_=book['shop_id']
             )
-            result.append(
-                types.InlineQueryResultArticle(
-                    type=InlineQueryResultType.ARTICLE,
-                    id=str(book['id']),
-                    title=book['book'],
-                    description=f"Do'kon: {shop['name']}\nNarx: {book['price']} so'm",
-                    thumbnail_url=shop['image'],
-                    parse_mode="HTML",
-                    input_message_content=types.InputTextMessageContent(
-                        message_text=f"Hello, this is result {book['book']}", parse_mode="HTML"
-                    )
-                )
-            )
+            if book['amount'] == 0:
+                pass
+            else:
+                result.append(
+                    types.InlineQueryResultArticle(
+                        type=InlineQueryResultType.ARTICLE,
+                        id=str(book['id']),
+                        title=book['book'],
+                        description=f"Do'kon: {shop['name']}\nNarx: {book['price']} so'm",
+                        thumbnail_url=shop['image'],
+                        parse_mode="HTML",
+                        input_message_content=types.InputTextMessageContent(
+                            message_text=f"<b>Kitob nomi:</b> {book['book']}\n<b>Narxi:</b> {book['price']} so`m\n\n"
+                                         f"<b>Manzil:</b> {shop['region']}, {shop['city']}, {shop['address']}\n\n"
+                                         f"<b>Telefon raqam:</b> {shop['phone']}\n\n"
+                                         f"<a href='{shop['map']}'>Xaritada ko`rish</a>",
+                            link_preview_options=types.LinkPreviewOptions(url=f"{shop['image']}")
+                        ), reply_markup=search_all_buttons(
+                            search_text="Qidirish", back_text="Ortga", back_callback="back_main_uz"
+                        )
+                    ))
         await inline_query.answer(
             results=result, is_personal=True, cache_time=1, button=types.InlineQueryResultsButton(
-                text="salom", start_parameter="startst"
-            ), switch_pm_text="switch text", switch_pm_parameter="switch parameter"
+                text="Pastdan tepaga suring", start_parameter="startst"
+            ),
         )
         # photo_url = "https://i1.wp.com/mohirdev.uz/wp-content/uploads/Telegram-bot.png",
         # thumbnail_url = "https://i1.wp.com/mohirdev.uz/wp-content/uploads/Telegram-bot.png",
